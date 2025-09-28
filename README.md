@@ -1,6 +1,5 @@
-# LuaCSS-Roblox-Reactive-UI-Framework
+# LuaCSS UI Framework Documentation
 
-# Documentation
 LuaCSS is a powerful UI framework for Roblox that provides a CSS-like approach to creating and styling GUI elements with reactive state management, animations, and component-based architecture.
 
 ## Table of Contents
@@ -79,6 +78,8 @@ Creates a new GUI object from a property table.
 - `VirtualGuiObject`: Enhanced object with additional methods
 - `table`: Original properties
 
+**Note:** The `properties` table must include a `class` property specifying the Roblox Instance type to create.
+
 #### `luacss.edit(object, properties)`
 Applies properties to an existing GUI object.
 
@@ -87,7 +88,7 @@ Applies properties to an existing GUI object.
 - `properties` (table): Properties to apply
 
 #### `luacss.style(name, properties)`
-Register a reusable style.
+Register a reusable style that can be referenced by name.
 
 ```lua
 luacss.style("button-primary", {
@@ -104,21 +105,35 @@ local button = luacss.compileObject({
 ```
 
 #### `luacss.component(name, data)`
-Register a reusable component.
+Register a reusable component. Returns a component object with methods.
+
+**Parameters:**
+- `name` (string): Component name
+- `data` (table | Instance | ModuleScript): Component definition
+
+**Returns:** Component object with methods like `makeGlobal()`, `Destroy()`, `Reload()`, etc.
 
 ```lua
 local myComponent = luacss.component("Card", {
     class = "Frame",
     groundcolor = Color3.new(1, 1, 1),
-    rounded = {0, 10},
-    shadow = {Scale = 1.2, Color = Color3.new(0, 0, 0)}
+    rounded = {0, 10}
 })
+
+-- Make globally available
+myComponent.makeGlobal()
 ```
 
 ### Utility Functions
 
-#### `luacss.scope()`
-Create a scoped context for automatic cleanup.
+#### `luacss.enableLogs()`
+Enable debug logging for the framework.
+
+#### `luacss.scope()` / `luacss.cleaner()`
+Create a scoped context for automatic cleanup. (`cleaner` is an alias for `scope`)
+
+#### `luacss.reloadAll()`
+Reload all registered components and styles, useful for development.
 
 ```lua
 local scope = luacss.scope()
@@ -242,21 +257,27 @@ end)
 ```lua
 {
     -- Size and Position
-    size = {0.5, 0, 0.5, 0}, -- UDim2 as table
-    position = {0, 100, 0, 50},
-    anchor = {0.5, 0.5}, -- AnchorPoint
+    size = {0.5, 0, 0.5, 0}, -- UDim2 as table [X.Scale, X.Offset, Y.Scale, Y.Offset]
+    width = {0.5, 100}, -- [Scale, Offset] for width only
+    height = {0.3, 50}, -- [Scale, Offset] for height only
+    position = {0, 100, 0, 50}, -- [X.Scale, X.Offset, Y.Scale, Y.Offset]
+    anchor = {0.5, 0.5}, -- AnchorPoint [X, Y]
     
     -- Alignment shortcuts
-    alignment = "center", -- "top", "bottom", "left", "right", "center"
-    center = true, -- Quick center alignment
+    alignment = "center", -- "top", "bottom", "left", "right", "center", or combinations like "top left"
+    center = true, -- Quick center alignment (same as alignment = "center")
     
-    -- Layout
-    list = {"center", "center", {0, 10}, Enum.FillDirection.Vertical},
-    grid = {"center", "center", {5, 5}, {100, 100}},
+    -- Layout systems
+    list = {"center", "center", {0, 10}, Enum.FillDirection.Vertical, Enum.SortOrder.LayoutOrder, horizontalflex, verticalflex},
+    grid = {"center", "center", {5, 5}, {100, 100}, Enum.FillDirection.Horizontal},
     
-    -- Flexbox-like
-    flexrow = 10, -- Horizontal layout with gap
-    flexcolumn = 5, -- Vertical layout with gap
+    -- Flexbox-like (simplified)
+    flexrow = 10, -- Horizontal UIListLayout with gap
+    flexcolumn = 5, -- Vertical UIListLayout with gap
+    
+    -- Layout order and clipping
+    layoutOrder = 1,
+    allowClipping = true, -- Sets ClipsDescendants
 }
 ```
 
@@ -264,27 +285,29 @@ end)
 
 ```lua
 {
-    -- Colors
-    groundcolor = Color3.fromRGB(100, 150, 200), -- Background
-    groundcolor = "#3498db", -- Hex colors
-    groundcolor = "blue", -- Named colors
+    -- Colors and appearance
+    groundcolor = Color3.fromRGB(100, 150, 200), -- Background color
+    groundcolor = "#3498db", -- Hex colors supported
+    groundcolor = "blue", -- Named colors: green, red, blue, black, white, yellow, pink, orange, purple, grey, teal, cyan, gray, indigo, violet, magenta, lime, etc.
+    groundtransparency = 0.5, -- Background transparency
+    opacity = 0.8, -- Sets background and text transparency
+    
     txtcolor = Color3.new(1, 1, 1), -- Text color
+    txtsize = 16, -- Text size
+    txtvisible = 0.5, -- Text transparency
+    text = "Hello World", -- Text content
+    font = Enum.Font.SourceSans, -- Text font
     
-    -- Transparency
-    groundtransparency = 0.5,
-    opacity = 0.8, -- Sets multiple transparency properties
+    -- Borders and corners
+    rounded = {0, 10}, -- Corner radius [Scale, Offset]
+    border = true, -- Add UIStroke border
+    borderColor = Color3.new(1, 0, 0), -- Border color (must use with existing UIStroke)
+    borderwidth = 2, -- Creates UIStroke with thickness
     
-    -- Borders and Corners
-    rounded = {0, 10}, -- Corner radius
-    border = true, -- Add border
-    borderwidth = 2,
-    
-    -- Effects
-    shadow = {Scale = 1.2, Color = Color3.new(0, 0, 0)},
-    gradient = {
-        Color = ColorSequence.new(Color3.new(1,0,0), Color3.new(0,0,1)),
-        Rotation = 45
-    }
+    -- Visual effects
+    visible = true, -- Visibility
+    rotation = 45, -- Rotation in degrees
+    zindex = 1, -- Z-order
 }
 ```
 
