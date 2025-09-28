@@ -1,6 +1,6 @@
 # LuaCSS-Roblox-Reactive-UI-Framework
-# LuaCSS UI Framework Documentation
 
+# Documentation
 LuaCSS is a powerful UI framework for Roblox that provides a CSS-like approach to creating and styling GUI elements with reactive state management, animations, and component-based architecture.
 
 ## Table of Contents
